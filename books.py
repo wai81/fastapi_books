@@ -72,3 +72,20 @@ async def create_book(booK_title, book_autor):
                 
     BOOKS[f'book_{curent_book_id + 1}'] = {'title':  booK_title, 'autor': book_autor}
     return BOOKS[f'book_{curent_book_id + 1}']
+
+"""
+PUT - запросы
+"""
+@app.put("/books/{book_name}")
+async def update_book(book_name: str, book_title: str, book_author: str):
+    book_information = {'titile': book_title, 'author': book_author}
+    BOOKS[book_name] = book_information
+    return book_information
+
+"""
+DELETE - запросы
+"""
+@app.delete("/books/{book_name}")
+async def delelte_book(book_name):
+    del BOOKS[book_name]
+    return f'Book {book_name} deleted.'
