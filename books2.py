@@ -8,11 +8,11 @@ pydantic - модуль python,
 в котором атрибуты класса имеют статическую типизацию
 """
 from pydantic import BaseModel, Field
-
+from uuid import UUID
 """
 UUID - библиотека python(универсальный уникальный идентификатор)
 """
-from uuid import UUID
+
 
 app = FastAPI()
 
@@ -45,27 +45,27 @@ async def create_book(book: Book):
 
 
 def create_books_no_api():
-    book1 = BOOKS(id='9318148b-e666-474a-a156-f1c77519bbf1',
-                  title='Book 1',
-                  author='Author 1',
-                  description='Description 1',
-                  ratind=50)
-    book2 = BOOKS(id='9318149b-e666-474a-a156-f1c77519bbf1',
-                  title='Book 2',
-                  author='Author 2',
-                  description='Description 2',
-                  ratind=70)
-    book3 = BOOKS(id='9318150b-e666-474a-a156-f1c77519bbf1',
-                  title='Book 3',
-                  author='Author 3',
-                  description='Description 3',
-                  ratind=90)
-    book4 = BOOKS(id='9318151b-e666-474a-a156-f1c77519bbf1',
-                  title='Book 4',
-                  author='Author 4',
-                  description='Description 4',
-                  ratind=80)
-    BOOKS.append(book1)
-    BOOKS.append(book2)
-    BOOKS.append(book3)
-    BOOKS.append(book4)
+    book_1 = Book(id="71f4c2ea-1340-41f4-89f7-2852347bb0d1",
+                  title="Title 1",
+                  author="Author 1",
+                  description="Description 1",
+                  rating=60)
+    book_2 = Book(id="21f4c2ea-1340-41f4-89f7-2852347bb0d1",
+                  title="Title 2",
+                  author="Author 2",
+                  description="Description 2",
+                  rating=70)
+    book_3 = Book(id="31f4c2ea-1340-41f4-89f7-2852347bb0d1",
+                  title="Title 3",
+                  author="Author 3",
+                  description="Description 3",
+                  rating=80)
+    book_4 = Book(id="41f4c2ea-1340-41f4-89f7-2852347bb0d1",
+                  title="Title 4",
+                  author="Author 4",
+                  description="Description 4",
+                  rating=90)
+    BOOKS.append(book_1)
+    BOOKS.append(book_2)
+    BOOKS.append(book_3)
+    BOOKS.append(book_4)
