@@ -94,7 +94,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-fastapienv/
+.fastapienv
 
 # Spyder project settings
 .spyderproject
@@ -113,3 +113,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.idea/
