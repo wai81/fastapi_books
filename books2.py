@@ -17,8 +17,7 @@ UUID - библиотека python(универсальный уникальны
 app = FastAPI()
 
 
-class Book(BaseModel):
-    # создали класс объекта
+class Book(BaseModel):  # создали класс объекта Book
     id: UUID
     title: str = Field(min_length=1)  # Field - неаобходимо для валидации данных
     author: str = Field(min_length=1, max_length=100)
@@ -27,7 +26,7 @@ class Book(BaseModel):
                                        min_length=1)  # Optional - означает что параметр не обязателен
     rating: int = Field(gt=-1, lt=101)  # gt-минимальное значение, lt-максимальное значение
 
-    class Config:
+    class Config:  # конфигурация класса для документации
         schema_extra = {
             "example": {
                 "id": "11f4c2ea-1340-41f4-89f7-2852347bb0d1",
@@ -43,9 +42,19 @@ BOOKS = []
 
 
 @app.get("/")
-async def read_all_books():
+async def read_all_books(books_to_return: Optional[int] = None):
+    """
+    :param books_to_return: возвращает указанное количестово записей
+    """
     if len(BOOKS) < 1:
         create_books_no_api()
+    if books_to_return and len(BOOKS) >= books_to_return > 0:
+        i = 1
+        new_books = []
+        while i <= books_to_return:
+            new_books.append(BOOKS[i-1])
+            i += 1
+        return new_books
     return BOOKS
 
 
