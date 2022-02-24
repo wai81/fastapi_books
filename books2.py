@@ -9,10 +9,10 @@ pydantic - модуль python,
 """
 from pydantic import BaseModel, Field
 from uuid import UUID
+
 """
 UUID - библиотека python(универсальный уникальный идентификатор)
 """
-
 
 app = FastAPI()
 
@@ -52,10 +52,17 @@ async def read_all_books(books_to_return: Optional[int] = None):
         i = 1
         new_books = []
         while i <= books_to_return:
-            new_books.append(BOOKS[i-1])
+            new_books.append(BOOKS[i - 1])
             i += 1
         return new_books
     return BOOKS
+
+
+@app.get("/book/{book_id}")
+async def read_book(book_id: UUID):
+    for x in BOOKS:
+        if x.id == book_id:
+            return x
 
 
 @app.post("/")
