@@ -1,8 +1,9 @@
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
-""" 
+"""
+HTTPException - библиотека обработки исключений 
 pydantic - модуль python,
 позволяющий объявить специальный класс PYTHON,
 в котором атрибуты класса имеют статическую типизацию
@@ -63,6 +64,7 @@ async def read_book(book_id: UUID):
     for x in BOOKS:
         if x.id == book_id:
             return x
+    raise raise_item_cannot_be_found_exception()  # обработка исключения
 
 
 @app.put("/{book_id}")
@@ -73,6 +75,7 @@ async def update_book(book_id: UUID, book: Book):
         if x.id == book_id:
             BOOKS[counter-1] = book
             return BOOKS[counter-1]
+    raise raise_item_cannot_be_found_exception()  # обработка исключения
 
 
 @app.post("/")
@@ -89,6 +92,7 @@ async def delete_book(book_id:UUID):
         if x.id == book_id:
             del BOOKS[counter-1]
             return f'ID:{book_id} is deleted'
+    raise raise_item_cannot_be_found_exception()  # обработка исключения
 
 
 def create_books_no_api():
@@ -116,3 +120,10 @@ def create_books_no_api():
     BOOKS.append(book_2)
     BOOKS.append(book_3)
     BOOKS.append(book_4)
+
+
+# обработка исключений
+def raise_item_cannot_be_found_exception():
+    return HTTPException(status_code=404,
+                         detail="Book not found",
+                         headers={"X-Header-Error": "Nothing to be seen at the UUID"})  # обработка исключения
