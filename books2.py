@@ -1,19 +1,20 @@
-from typing import Optional
-
-from fastapi import FastAPI, HTTPException
-
 """
-HTTPException - библиотека обработки исключений 
-pydantic - модуль python,
-позволяющий объявить специальный класс PYTHON,
-в котором атрибуты класса имеют статическую типизацию
-"""
-from pydantic import BaseModel, Field
-from uuid import UUID
-
-"""
+HTTPException - библиотека обработки исключений
+pydantic - модуль python, позволяющий объявить специальный класс PYTHON, в котором атрибуты класса имеют
+        статическую типизацию
 UUID - библиотека python(универсальный уникальный идентификатор)
 """
+from typing import Optional
+from fastapi import FastAPI, HTTPException, Request
+from pydantic import BaseModel, Field
+from uuid import UUID
+from starlette.responses import JSONResponse
+
+
+class NegativeNumberException(Exception):
+    def __init__(self, books_to_return):
+        self.books_to_return = books_to_return
+
 
 app = FastAPI()
 
@@ -42,11 +43,24 @@ class Book(BaseModel):  # создали класс объекта Book
 BOOKS = []
 
 
+@app.exception_handler(NegativeNumberException)
+async def negative_number_exception_handler(request: Request,
+                                            exception: NegativeNumberException):
+    return JSONResponse(
+        status_code=418,
+        content={"message": f'Hey, why do yo wan {exception.books_to_return}'
+                            f' books? You read more!'}
+    )
+
+
 @app.get("/")
 async def read_all_books(books_to_return: Optional[int] = None):
     """
     :param books_to_return: возвращает указанное количестово записей
     """
+    if books_to_return and books_to_return < 0:
+        raise NegativeNumberException(books_to_return=books_to_return)
+
     if len(BOOKS) < 1:
         create_books_no_api()
     if books_to_return and len(BOOKS) >= books_to_return > 0:
