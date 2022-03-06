@@ -5,7 +5,7 @@ pydantic - модуль python, позволяющий объявить спец
 UUID - библиотека python(универсальный уникальный идентификатор)
 """
 from typing import Optional
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, HTTPException, Request, status, Form
 from pydantic import BaseModel, Field
 from uuid import UUID
 from starlette.responses import JSONResponse
@@ -62,6 +62,11 @@ async def negative_number_exception_handler(request: Request,
         content={"message": f'Hey, why do yo wan {exception.books_to_return}'
                             f' books? You read more!'}
     )
+
+
+@app.post("/books/login")
+async def book_login(username: str = Form(...), password: str = Form(...)):
+    return {"username": username, "password": password}
 
 
 @app.get("/")
