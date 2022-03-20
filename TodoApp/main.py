@@ -11,8 +11,6 @@ app = FastAPI()
 models.Base.metadata.create_all(bind=engine)
 
 """Сеанс работы с базой данных"""
-
-
 def get_db():
     try:
         db = SessionLocal()
