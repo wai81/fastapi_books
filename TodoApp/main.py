@@ -5,12 +5,15 @@ import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
+from auth import get_current_user, get_user_exception
 
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
 
 """Сеанс работы с базой данных"""
+
+
 def get_db():
     try:
         db = SessionLocal()
@@ -19,9 +22,7 @@ def get_db():
         db.close()
 
 
-""" 
-Класс для расширения основноймодели, проверка валидации на основе pydantic
-"""
+# Класс для расширения основноймодели, проверка валидации на основе pydantic
 class Todo(BaseModel):
     title: str
     description: Optional[str]
@@ -32,6 +33,16 @@ class Todo(BaseModel):
 @app.get("/")
 async def read_all(db: Session = Depends(get_db)):
     return db.query(models.Todos).all()
+
+
+@app.get("/todos/user/")
+async def read_all_by_user(user: dict = Depends(get_current_user),
+                           db: Session = Depends(get_db)):
+    if user is None:
+        raise get_user_exception()
+    return db.query(models.Todos)\
+        .filter(models.Todos.owner_id == user.get("id"))\
+        .all()
 
 
 @app.get("/todo/{todo_id}")
@@ -60,8 +71,8 @@ async def create_todo(todo: Todo, db: Session = Depends(get_db)):
 
 @app.put("/{todo_id}")
 async def update_todo(todo_id: int, todo: Todo, db: Session = Depends(get_db)):
-    todo_model = db.query(models.Todos)\
-        .filter(models.Todos.id == todo_id)\
+    todo_model = db.query(models.Todos) \
+        .filter(models.Todos.id == todo_id) \
         .first()
 
     if todo_model is None:
@@ -87,8 +98,8 @@ async def delete_todo(todo_id: int, db: Session = Depends(get_db)):
     if todo_model is None:
         raise http_exception()
 
-    db.query(models.Todos)\
-        .filter(models.Todos.id == todo_id)\
+    db.query(models.Todos) \
+        .filter(models.Todos.id == todo_id) \
         .delete()
     db.commit()
 
@@ -103,5 +114,7 @@ def successful_response(status_code: int):
 
 
 """Функция обработки исключения(ошибок)"""
+
+
 def http_exception():
     return HTTPException(status_code=404, detail="Запись не найдена")
