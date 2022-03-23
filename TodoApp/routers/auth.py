@@ -1,4 +1,7 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+import sys
+sys.path.append("..")  # позволяет импортировать все что находится в родительском катологе
+
+from fastapi import Depends, HTTPException, status, APIRouter
 from pydantic import BaseModel
 from typing import Optional
 import models
@@ -28,7 +31,11 @@ models.Base.metadata.create_all(bind=engine)
 
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="token")
 
-app = FastAPI()
+router = APIRouter(
+    prefix="/auth",  # добавление прификса для документации
+    tags=["auth"],
+    responses={401: {"user": "Not authorized"}}
+)
 
 
 # Функция работы с базой данных
@@ -93,7 +100,7 @@ async def get_current_user(token: str = Depends(oauth2_bearer)):
         raise get_user_exception()
 
 
-@app.post("/create/user")
+@router.post("/create/user")
 async def create_new_user(create_user: CreateUser, db: Session = Depends(get_db)):
     create_user_model = models.Users()
     create_user_model.email = create_user.email
@@ -110,7 +117,7 @@ async def create_new_user(create_user: CreateUser, db: Session = Depends(get_db)
     db.commit()
 
 
-@app.post("/token")
+@router.post("/token")
 async def login_for_access_token(from_data: OAuth2PasswordRequestForm = Depends(),
                                  db: Session = Depends(get_db)):
     user = authenticate_user(from_data.username, from_data.password, db)
