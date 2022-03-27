@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..")  # позволяет импортировать все что находится в родительском катологе
 
-from fastapi import Depends, HTTPException, status, APIRouter
+from fastapi import Depends, HTTPException, status, APIRouter, Request
 from pydantic import BaseModel
 from typing import Optional
 import models
@@ -11,6 +11,9 @@ from database import SessionLocal, engine
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
+
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 
 SECRET_KEY = "MY_VERY_SECRET_KEY"
@@ -28,6 +31,8 @@ class CreateUser(BaseModel):
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 models.Base.metadata.create_all(bind=engine)
+
+templates = Jinja2Templates(directory="templates")
 
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -129,6 +134,18 @@ async def login_for_access_token(from_data: OAuth2PasswordRequestForm = Depends(
                                 user.id,
                                 expires_delta=token_expires)
     return {"token": token}
+
+
+@router.get("/", response_class=HTMLResponse)
+async def authentication_page(request: Request):
+    context = {"request": request}
+    return templates.TemplateResponse("login.html", context)
+
+
+@router.get("/register", response_class=HTMLResponse)
+async def register(request: Request):
+    context = {"request": request}
+    return templates.TemplateResponse("register.html", context)
 
 
 # Исключение
