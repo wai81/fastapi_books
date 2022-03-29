@@ -170,12 +170,20 @@ async def login(request: Request, db: Session = Depends(get_db)):
         validate_user_cookie = await login_for_access_token(response=response, from_data=form, db=db)
 
         if not validate_user_cookie:
-            msg = "Не верное Имя пользователя или Пароль"
+            msg = "Не верное 'Имя пользователя' или 'Пароль'"
             return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
         return response
     except HTTPException:
         ms = "Неизвестная ошибка"
         return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
+
+
+@router.get("/logout")
+async def logout(request: Request):
+    msg = 'Вы вышли из приложения'
+    response = templates.TemplateResponse("login.html", {"request": request, "msg": msg})
+    response.delete_cookie(key="access_token")
+    return response
 
 
 @router.get("/register", response_class=HTMLResponse)

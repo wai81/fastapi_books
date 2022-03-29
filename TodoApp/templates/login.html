@@ -7,7 +7,7 @@
         </div>
         <div class="card-body">
             {% if msg %}
-            {% if msg == 'Авторизация успешна' or msg == 'Пользователь создан' %}
+            {% if msg == 'Вы вышли из приложения' or msg == 'Пользователь создан' %}
             <div class="alert alert-success" role="alert">{{msg}}</div>
             {% else %}
             <div class="alert alert-danger" role="alert">{{msg}}</div>
