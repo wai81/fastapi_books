@@ -21,16 +21,31 @@
                 <tbody>
 
                 {% for todo in todos%}
+                {% if todo.complete == False %}
                 <tr class="pointer" >
 
                     <td>{{loop.index}}</td>
                     <td>{{todo.title}} </td>
                     <td>
-                        <button type="button" class="btn btn-success">Завершть</button>
+                        <button onclick="window.location.href='complete/{{todo.id}}'"
+                                type="button" class="btn btn-success">Завершть</button>
                         <button onclick="window.location.href='edit-todo/{{todo.id}}'"
                                 type="button" class="btn btn-info">Изменить</button>
                     </td>
                 </tr>
+                {% else %}
+                <tr class="pointer alert alert-success" >
+
+                    <td>{{loop.index}}</td>
+                    <td class="strike-through-td">{{todo.title}} </td>
+                    <td>
+                        <button onclick="window.location.href='complete/{{todo.id}}'"
+                                type="button" class="btn btn-success">Отменить</button>
+                        <button onclick="window.location.href='edit-todo/{{todo.id}}'"
+                                type="button" class="btn btn-info">Изменить</button>
+                    </td>
+                </tr>
+                {% endif %}
                 {% endfor %}
 
                 </tbody>
