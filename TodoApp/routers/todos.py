@@ -1,7 +1,11 @@
 import sys
 sys.path.append("..")  # позволяет импортировать все что находится в родительском катологе
+
+
+from starlette import status
+from starlette.responses import RedirectResponse
 from typing import Optional
-from fastapi import Depends, HTTPException, APIRouter, Request
+from fastapi import Depends, HTTPException, APIRouter, Request, Form
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
@@ -43,6 +47,21 @@ async def read_all_by_user(request: Request, db: Session = Depends(get_db)):
 async def add_new_todo(request: Request):
     context = {"request": request}
     return templates.TemplateResponse("add-todo.html", context)
+
+@router.post("/add-todo", response_class=HTMLResponse)
+async def crate_todo(request: Request, title: str = Form(...), description: str = Form(...),
+                     priority: int = Form(...), db: Session = Depends(get_db)):
+    todo_model = models.Todos()
+    todo_model.title = title
+    todo_model.description = description
+    todo_model.priority = priority
+    todo_model.complete = False
+    todo_model.owner_id = 2
+
+    db.add(todo_model)
+    db.commit()
+
+    return RedirectResponse(url="/todos", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/edit-todo/{todo_id}", response_class=HTMLResponse)
