@@ -3,18 +3,18 @@
 <div class="container">
     <div class="card text-center">
         <div class="card-header">
-            Your Todos!
+            Ваши Задачи!
         </div>
         <div class="card-body">
-            <h5 class="card-title">List of your Todos!</h5>
-            <p class="card-text">Information regarding stuff that needs to be complete</p>
+            <h5 class="card-title">Список ваших задач!</h5>
+            <p class="card-text">Список задач, которые должны быть выполнены</p>
 
             <table class="table table-hover">
                 <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Info</th>
-                    <th scope="col">Actions</th>
+                    <th scope="col">Инфо</th>
+                    <th scope="col">Действия</th>
 
                 </tr>
                 </thead>
@@ -26,9 +26,9 @@
                     <td>{{loop.index}}</td>
                     <td>{{todo.title}} </td>
                     <td>
-                        <button type="button" class="btn btn-success">Complete</button>
+                        <button type="button" class="btn btn-success">Завершть</button>
                         <button onclick="window.location.href='edit-todo/{{todo.id}}'"
-                                type="button" class="btn btn-info">Edit</button>
+                                type="button" class="btn btn-info">Изменить</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -36,7 +36,7 @@
                 </tbody>
             </table>
 
-            <a href="add-todo" class="btn btn-primary">Add a new Todo!</a>
+            <a href="add-todo" class="btn btn-primary">Добавить новую задачу!</a>
         </div>
     </div>
 </div>
