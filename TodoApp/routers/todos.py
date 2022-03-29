@@ -31,8 +31,11 @@ def get_db():
 
 
 @router.get("/", response_class=HTMLResponse)
-async def read_all_by_user(request: Request):
-    context = {"request": request}
+async def read_all_by_user(request: Request, db: Session = Depends(get_db)):
+    todos = db.query(models.Todos).filter(models.Todos.owner_id == 2).all()
+
+    context = {"request": request,
+               "todos": todos}
     return templates.TemplateResponse("home.html", context)
 
 
