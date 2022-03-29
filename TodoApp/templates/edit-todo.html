@@ -28,7 +28,8 @@
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Изменить вашу задачу</button>
-                <button type="button" class="btn btn-danger">Удалить</button>
+                <button onclick="window.location.href='/todos/delete/{{todo.id}}'"
+                        type="button" class="btn btn-danger">Удалить</button>
             </form>
         </div>
     </div>
