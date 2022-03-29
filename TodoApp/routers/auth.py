@@ -1,7 +1,8 @@
 import sys
 sys.path.append("..")  # позволяет импортировать все что находится в родительском катологе
 
-from fastapi import Depends, HTTPException, status, APIRouter, Request
+from starlette.responses import RedirectResponse
+from fastapi import Depends, HTTPException, status, APIRouter, Request, Response
 from pydantic import BaseModel
 from typing import Optional
 import models
@@ -41,6 +42,18 @@ router = APIRouter(
     tags=["auth"],
     responses={401: {"user": "Not authorized"}}
 )
+
+
+class LoginForm:
+    def __init__(self, request: Request):
+        self.request: Request = request
+        self.username: Optional[str] = None
+        self.password: Optional[str] = None
+
+    async def create_oauth_form(self):
+        form = await self.request.form()
+        self.username = form.get("email")
+        self.password = form.get("password")
 
 
 # Функция работы с базой данных
@@ -123,23 +136,43 @@ async def create_new_user(create_user: CreateUser, db: Session = Depends(get_db)
 
 
 @router.post("/token")
-async def login_for_access_token(from_data: OAuth2PasswordRequestForm = Depends(),
+async def login_for_access_token(response: Response, from_data: OAuth2PasswordRequestForm = Depends(),
                                  db: Session = Depends(get_db)):
     user = authenticate_user(from_data.username, from_data.password, db)
     if not user:
-        raise token_exception()
+        return False  # token_exception()
 
-    token_expires = timedelta(minutes=20)
+    token_expires = timedelta(minutes=60)
     token = create_access_token(user.username,
                                 user.id,
                                 expires_delta=token_expires)
-    return {"token": token}
+    response.set_cookie(key="access_token", value=token, httponly=True)
+
+    return True  # {"token": token}
 
 
 @router.get("/", response_class=HTMLResponse)
 async def authentication_page(request: Request):
     context = {"request": request}
     return templates.TemplateResponse("login.html", context)
+
+
+@router.post("/", response_class=HTMLResponse)
+async def login(request: Request, db: Session = Depends(get_db)):
+    try:
+        form = LoginForm(request)
+        await form.create_oauth_form()
+        response = RedirectResponse(url="/todos", status_code=status.HTTP_302_FOUND)
+
+        validate_user_cookie = await login_for_access_token(response=response, from_data=form, db=db)
+
+        if not validate_user_cookie:
+            msg = "Не верное Имя пользователя или Пароль"
+            return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
+        return response
+    except HTTPException:
+        ms = "Неизвестная ошибка"
+        return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
 
 
 @router.get("/register", response_class=HTMLResponse)

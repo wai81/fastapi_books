@@ -3,24 +3,31 @@
 <div class="container">
     <div class="card">
         <div class="card-header">
-            Login
+            Аворизация
         </div>
         <div class="card-body">
-            <form>
+            {% if msg %}
+            {% if msg == 'Авторизация успешна' or msg == 'Пользователь создан' %}
+            <div class="alert alert-success" role="alert">{{msg}}</div>
+            {% else %}
+            <div class="alert alert-danger" role="alert">{{msg}}</div>
+            {% endif %}
+            {% endif %}
+            <form method="POST" action="/auth">
                 <div class="form-group">
-                    <label>Username</label>
+                    <label>Имя пользователя</label>
                     <input type="text" class="form-control"
                            name="email" required>
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
+                    <label>Пароль</label>
                     <input type="password" class="form-control" name="password" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="submit" class="btn btn-primary">Войти</button>
             </form>
         </div>
         <div class="card-footer text-muted">
-            <a href="#"> Register? </a>
+            <a href="#"> Регистрация? </a>
         </div>
     </div>
 </div>
